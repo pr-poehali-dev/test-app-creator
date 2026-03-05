@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
-type Category = "Математика" | "История" | "Наука" | "Языки" | "Другое";
+type Category = "Общее";
 
 interface Answer {
   text: string;
@@ -33,14 +33,12 @@ interface HistoryEntry {
   category: Category;
 }
 
-const CATEGORIES: Category[] = ["Математика", "История", "Наука", "Языки", "Другое"];
-
 const INITIAL_QUIZZES: Quiz[] = [
   {
     id: "1",
     title: "Основы математики",
     description: "Проверьте базовые знания арифметики и алгебры",
-    category: "Математика",
+    category: "Общее",
     createdAt: new Date("2026-02-20"),
     questions: [
       {
@@ -79,7 +77,7 @@ const INITIAL_QUIZZES: Quiz[] = [
     id: "2",
     title: "История России",
     description: "Ключевые события и даты отечественной истории",
-    category: "История",
+    category: "Общее",
     createdAt: new Date("2026-02-25"),
     questions: [
       {
@@ -108,7 +106,7 @@ const INITIAL_QUIZZES: Quiz[] = [
     id: "3",
     title: "Элементы периодической таблицы",
     description: "Символы и свойства химических элементов",
-    category: "Наука",
+    category: "Общее",
     createdAt: new Date("2026-03-01"),
     questions: [
       {
@@ -152,7 +150,7 @@ const INITIAL_HISTORY: HistoryEntry[] = [
     score: 2,
     total: 2,
     date: new Date("2026-03-04"),
-    category: "Наука",
+    category: "Общее",
   },
 ];
 
@@ -162,7 +160,7 @@ export default function Index() {
   const [page, setPage] = useState<Page>("tests");
   const [quizzes, setQuizzes] = useState<Quiz[]>(INITIAL_QUIZZES);
   const [history, setHistory] = useState<HistoryEntry[]>(INITIAL_HISTORY);
-  const [filterCategory, setFilterCategory] = useState<Category | "Все">("Все");
+  const [filterCategory] = useState<Category | "Все">("Все");
 
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
@@ -173,7 +171,7 @@ export default function Index() {
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
   const [editorTitle, setEditorTitle] = useState("");
   const [editorDesc, setEditorDesc] = useState("");
-  const [editorCategory, setEditorCategory] = useState<Category>("Другое");
+  const [editorCategory] = useState<Category>("Общее");
   const [editorQuestions, setEditorQuestions] = useState<Question[]>([]);
 
   const [userName, setUserName] = useState("Пользователь");
@@ -228,13 +226,11 @@ export default function Index() {
       setEditingQuiz(quiz);
       setEditorTitle(quiz.title);
       setEditorDesc(quiz.description);
-      setEditorCategory(quiz.category);
       setEditorQuestions(JSON.parse(JSON.stringify(quiz.questions)));
     } else {
       setEditingQuiz(null);
       setEditorTitle("");
       setEditorDesc("");
-      setEditorCategory("Другое");
       setEditorQuestions([]);
     }
     setPage("editor");
@@ -362,22 +358,6 @@ export default function Index() {
               <p className="text-gray-400 text-sm">{quizzes.length} тестов в библиотеке</p>
             </div>
 
-            <div className="flex gap-2 flex-wrap mb-8 animate-fade-in stagger-1">
-              {(["Все", ...CATEGORIES] as const).map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilterCategory(cat as Category | "Все")}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                    filterCategory === cat
-                      ? "bg-gray-900 text-white border-gray-900"
-                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
             <div className="space-y-3">
               {filteredQuizzes.map((quiz, i) => (
                 <div
@@ -389,8 +369,6 @@ export default function Index() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-gray-400 font-medium">{quiz.category}</span>
-                        <span className="text-gray-200">·</span>
                         <span className="text-xs text-gray-400">{quiz.questions.length} вопросов</span>
                       </div>
                       <h3 className="font-semibold text-gray-900 text-base mb-1">{quiz.title}</h3>
@@ -594,24 +572,6 @@ export default function Index() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-gray-500 block mb-1.5">Категория</label>
-                <div className="flex gap-2 flex-wrap">
-                  {CATEGORIES.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setEditorCategory(cat)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                        editorCategory === cat
-                          ? "bg-gray-900 text-white border-gray-900"
-                          : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
 
             <div className="mt-8 space-y-4">
@@ -716,7 +676,6 @@ export default function Index() {
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div>
-                          <div className="text-xs text-gray-400 mb-0.5">{entry.category}</div>
                           <h3 className="font-semibold text-gray-900 text-sm">{entry.quizTitle}</h3>
                         </div>
                         <div className="text-right">
